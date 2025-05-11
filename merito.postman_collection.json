@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "f40c5c5b-5937-420f-8040-58604b745415",
+		"name": "merito",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6693128",
+		"_collection_link": "https://grey-capsule-376939.postman.co/workspace/NOZ~d0088667-47a1-4a20-b60f-e3ad11d41e11/collection/6693128-f40c5c5b-5937-420f-8040-58604b745415?action=share&source=collection_link&creator=6693128"
+	},
+	"item": [
+		{
+			"name": "carteira",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/v1/carteira",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"carteira"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "carteira insert",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"nome\",\n    \"ticker\": \"codigo\",\n    \"type\": \"Ações\",\n    \"quoteValue\": 10.5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/carteira",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"carteira"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movimentacoes insert",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"carteira_id\": 4,\n    \"tipo\": \"APORTE\",\n    \"type\": \"Ações\",\n    \"quantidade\": 90,\n    \"valor\": 155\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/movimentacoes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"movimentacoes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
