@@ -1,16 +1,7 @@
 # Flask-RESTful
 
-docker-compose up --build
+Eu criei 3 endpoints apenas, conforme [Postman](../merito.postman_collection.json) na raiz do projeto.
 
-python3 -m venv .venv && . .venv/bin/activate
+![Image](https://github.com/user-attachments/assets/6d7672ba-a5a6-452c-957b-77de8d066349)
 
-
-# Caso queria limpar  o volume
-
-// Parar e remover containers
-docker-compose down
-// Listar volumes
-docker volume ls
-// Remover o volume pgdata
-docker volume rm desafio-fullstack-merito_pgdata
 
