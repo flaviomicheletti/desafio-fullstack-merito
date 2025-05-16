@@ -4,15 +4,6 @@ import Dashboard from './components/Dashboard';
 import CadastroFundo from './components/CadastroFundo';
 import CadastroMovimentacao from './components/CadastroMovimentacao'; 
 
-// function App() {
-//   return (
-//     <Router>
-//       <Routes>
-//         <Route path="/" element={<Dashboard />} />
-//       </Routes>
-//     </Router>
-//   );
-// }
 
 function App() {
   return (

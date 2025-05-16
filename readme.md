@@ -25,7 +25,7 @@ Se, por um acaso, precisar resetar o "volume":
 
     cd ./backend
     python3 -m venv .venv && . .venv/bin/activate
-    python app.y
+    python -m app.main
 
 Veja mais detalhes no arquivo [readme](backend/readme.md).
 

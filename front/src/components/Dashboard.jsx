@@ -3,8 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Alert } from '@mui/material';
 import styled from '@emotion/styled';
-import { fetchCarteira } from '../store/carteiraSlice'; // Import the thunk
+import { fetchCarteira } from '../store/carteiraSlice';
 
+// Estilizações dos componentes
 const StyledContainer = styled(Container)`
   padding: 24px;
   max-width: 1200px;
@@ -34,6 +35,7 @@ const CenteredContent = styled('div')`
   min-height: 200px;
 `;
 
+// Formata valor para moeda brasileira
 const formatCurrency = (value) => {
   if (typeof value !== 'number') {
     return 'N/A';
@@ -44,18 +46,17 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
+// Formata data para padrão brasileiro
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A';
-  // Check if dateStr is already a Date object or a string that needs parsing
   const date = (dateStr instanceof Date) ? dateStr : new Date(dateStr);
-  if (isNaN(date.getTime())) return 'Data inválida'; // Handle invalid date strings
+  if (isNaN(date.getTime())) return 'Data inválida';
   return date.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
 };
-
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -67,14 +68,14 @@ const Dashboard = () => {
     error,
   } = useSelector((state) => state.carteira);
 
+  // Carrega dados da carteira
   useEffect(() => {
-    // Fetch data only if it's not already loading or loaded (or to refresh)
-    // You might want more sophisticated logic here if you need to refresh data periodically
     if (loading === 'idle') {
       dispatch(fetchCarteira());
     }
-  }, [dispatch, loading]); // Add loading to dependency array to avoid re-fetching if already loading
+  }, [dispatch, loading]);
 
+  // Exibe loading enquanto carrega dados
   if (loading === 'loading') {
     return (
       <StyledContainer>
@@ -85,6 +86,7 @@ const Dashboard = () => {
     );
   }
 
+  // Exibe erro se ocorrer
   if (loading === 'failed' && error) {
     return (
       <StyledContainer>
@@ -93,13 +95,14 @@ const Dashboard = () => {
     );
   }
 
-  // Ensure data structures are present before trying to access their properties
+  // Garante que os dados existam
   const investedAmount = portfolioSummary?.invested ?? 0;
   const portfolioList = portfolio ?? [];
   const transactionsList = recentTransactions ?? [];
 
   return (
     <StyledContainer>
+      {/* Seção do total investido */}
       <TotalInvestedPaper elevation={3}>
         <SectionTitle variant="h5">Total Investido</SectionTitle>
         <Typography variant="h4" color="primary">
@@ -107,6 +110,7 @@ const Dashboard = () => {
         </Typography>
       </TotalInvestedPaper>
 
+      {/* Tabela de fundos */}
       <SectionTitle variant="h5">Meus Fundos</SectionTitle>
       {portfolioList.length > 0 ? (
         <TableContainer component={Paper} sx={{ marginBottom: '24px' }}>
@@ -137,6 +141,7 @@ const Dashboard = () => {
         <Typography sx={{ marginBottom: '24px' }}>Nenhum fundo na carteira.</Typography>
       )}
 
+      {/* Tabela de movimentações */}
       <SectionTitle variant="h5">Movimentações Recentes</SectionTitle>
       {transactionsList.length > 0 ? (
         <TableContainer component={Paper}>

@@ -1,5 +1,6 @@
 // src/components/CadastroFundo.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Container,
@@ -14,12 +15,13 @@ import {
   Box,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { addFundo, resetAddFundoStatus } from '../store/carteiraSlice'; // Import thunk and reset action
+import { addFundo, resetAddFundoStatus } from '../store/carteiraSlice';
 
+// Estilizações dos componentes
 const StyledContainer = styled(Container)`
   padding: 24px;
-  max-width: 600px; /* Adjusted for a typical form layout */
-  margin: 40px auto; /* Added some margin for better visual separation */
+  max-width: 600px;
+  margin: 40px auto;
 `;
 
 const FormPaper = styled(Paper)`
@@ -39,40 +41,43 @@ const ButtonContainer = styled(Box)`
   gap: 16px;
 `;
 
+// Tipos de fundos disponíveis
+// @TODO Hardcode
 const fundTypes = [
   { value: 'Renda Fixa', label: 'Renda Fixa' },
   { value: 'Ações', label: 'Ações' },
   { value: 'Multimercado', label: 'Multimercado' },
-  // Add other types if needed, consistent with backend validation or expectations
 ];
 
 const CadastroFundo = () => {
   const dispatch = useDispatch();
   const { addFundoStatus, addFundoError, lastAddedFundo } = useSelector((state) => state.carteira);
 
+  // Estados do formulário
   const [nome, setNome] = useState('');
   const [ticker, setTicker] = useState('');
-  const [tipo, setTipo] = useState(fundTypes[0].value); // Default to the first type
+  const [tipo, setTipo] = useState(fundTypes[0].value);
   const [valorCota, setValorCota] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  const navigate = useNavigate();
 
+
+  // Limpa status ao desmontar componente
   useEffect(() => {
-    // Reset status when component unmounts or when a new submission might occur
     return () => {
       dispatch(resetAddFundoStatus());
     };
   }, [dispatch]);
 
+  // Limpa formulário após cadastro bem-sucedido
   useEffect(() => {
     if (addFundoStatus === 'succeeded') {
-      // Optionally clear form or navigate away
-      // For now, just log and keep form for another entry
       console.log('Fundo adicionado com sucesso:', lastAddedFundo);
-      handleCancel(); // Clear form after successful submission
+      handleCancel();
     }
   }, [addFundoStatus, lastAddedFundo, dispatch]);
 
-
+  // Valida campos do formulário
   const validateForm = () => {
     const errors = {};
     if (!nome.trim()) errors.nome = 'Nome do fundo é obrigatório.';
@@ -91,6 +96,7 @@ const CadastroFundo = () => {
     return Object.keys(errors).length === 0;
   };
 
+  // Envia dados do formulário
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
@@ -104,13 +110,15 @@ const CadastroFundo = () => {
     }
   };
 
+  // Limpa formulário
   const handleCancel = () => {
     setNome('');
     setTicker('');
     setTipo(fundTypes[0].value);
     setValorCota('');
     setFormErrors({});
-    dispatch(resetAddFundoStatus()); // Clear any previous API status messages
+    dispatch(resetAddFundoStatus());
+    navigate('/');    
   };
 
   return (
@@ -135,7 +143,7 @@ const CadastroFundo = () => {
               <TextField
                 label="Código (Ticker)"
                 value={ticker}
-                onChange={(e) => setTicker(e.target.value.toUpperCase())} // Convert to uppercase
+                onChange={(e) => setTicker(e.target.value.toUpperCase())}
                 fullWidth
                 required
                 error={!!formErrors.ticker}
@@ -173,8 +181,8 @@ const CadastroFundo = () => {
                 helperText={formErrors.valorCota}
                 InputProps={{
                     inputProps: {
-                        min: 0.01, // Minimum value
-                        step: 0.01 // Step for number input
+                        min: 0.01,
+                        step: 0.01
                     }
                 }}
               />

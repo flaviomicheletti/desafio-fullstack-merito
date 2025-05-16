@@ -1,5 +1,6 @@
 // src/components/CadastroMovimentacao.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Container,
@@ -20,8 +21,9 @@ import {
 } from '@mui/material';
 import styled from '@emotion/styled';
 import { addMovimentacao, resetAddMovimentacaoStatus } from '../store/movimentacoesSlice';
-import { fetchCarteira } from '../store/carteiraSlice'; // To get the list of funds
+import { fetchCarteira } from '../store/carteiraSlice';
 
+// Estilizações dos componentes
 const StyledContainer = styled(Container)`
   padding: 24px;
   max-width: 600px;
@@ -45,63 +47,61 @@ const ButtonContainer = styled(Box)`
   gap: 16px;
 `;
 
-const mockFundos = [ // Using the provided mock data for now
-    { id: 5, fundName: "a" },
-    { id: 2, fundName: "ETF IVVB11" },
-    { id: 3, fundName: "Fundo Imobiliário XP" },
-    { id: 4, fundName: "nome" },
-    { id: 1, fundName: "Tesouro Selic 2026" },
-];
+// Dados mockados temporários
+// const mockFundos = [
+//     { id: 2, fundName: "ETF IVVB11" },
+//     { id: 3, fundName: "Fundo Imobiliário XP" },
+//     { id: 1, fundName: "Tesouro Selic 2026" },
+// ];
 
+// Opções de tipo de movimentação
 const tip_movimentacao_options = [
     { value: 'APORTE', label: 'Aporte' },
     { value: 'RESGATE', label: 'Resgate' },
 ];
 
-
 const CadastroMovimentacao = () => {
   const dispatch = useDispatch();
 
-  // State from movimentacoesSlice
+  // Estados do Redux
   const { addMovimentacaoStatus, addMovimentacaoError, lastAddedMovimentacao } = useSelector(
     (state) => state.movimentacoes
   );
-
-  // State from carteiraSlice for the fund dropdown
   const { portfolio: fundosDisponiveis, loading: loadingFundos } = useSelector(
     (state) => state.carteira
   );
 
+  // Estados do formulário
   const [carteiraId, setCarteiraId] = useState('');
-  const [dataOperacao, setDataOperacao] = useState(new Date().toISOString().split('T')[0]); // Defaults to today, backend uses its own date
-  const [tipoMovimentacao, setTipoMovimentacao] = useState(tip_movimentacao_options[0].value); // Default to 'APORTE'
+  const [dataOperacao, setDataOperacao] = useState(new Date().toISOString().split('T')[0]);
+  const [tipoMovimentacao, setTipoMovimentacao] = useState(tip_movimentacao_options[0].value);
   const [valor, setValor] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  const navigate = useNavigate();  
 
+  // Carrega lista de fundos disponíveis
   useEffect(() => {
-    // Fetch fundos if not already loaded or if mock data isn't being used
-    // For now, we will switch to using fundosDisponiveis once populated
     if (fundosDisponiveis.length === 0 && loadingFundos === 'idle') {
       dispatch(fetchCarteira());
     }
   }, [dispatch, fundosDisponiveis, loadingFundos]);
 
-
+  // Limpa status ao desmontar componente
   useEffect(() => {
-    // Reset status when component unmounts
     return () => {
       dispatch(resetAddMovimentacaoStatus());
     };
   }, [dispatch]);
 
+  // Limpa formulário após cadastro bem-sucedido
   useEffect(() => {
     if (addMovimentacaoStatus === 'succeeded') {
-      console.log('Movimentação registrada com sucesso:', lastAddedMovimentacao);
-      handleCancel(); // Clear form
+      handleCancel();
     }
   }, [addMovimentacaoStatus, lastAddedMovimentacao, dispatch]);
 
+  // Valida campos do formulário
   const validateForm = () => {
     const errors = {};
     if (!carteiraId) errors.carteiraId = 'Selecione um fundo.';
@@ -115,15 +115,13 @@ const CadastroMovimentacao = () => {
     const numericQuantidade = parseFloat(quantidade);
     if (isNaN(numericQuantidade) || numericQuantidade <= 0) {
       errors.quantidade = 'Quantidade de cotas deve ser um número positivo.';
-    } else {
-        // Additional check for RESGATE: ensure quantity is not more than available (if we had that info here)
-        // For now, the backend handles this check: "Quantidade de cotas insuficiente para resgate"
     }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
+  // Envia dados do formulário
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
@@ -132,12 +130,12 @@ const CadastroMovimentacao = () => {
         tipo: tipoMovimentacao,
         valor: parseFloat(valor),
         quantidade: parseFloat(quantidade),
-        // 'type' (like "Ações") is not sent as it's not used by the backend for this endpoint
       };
       dispatch(addMovimentacao(movimentacaoData));
     }
   };
 
+  // Limpa formulário
   const handleCancel = () => {
     setCarteiraId('');
     setTipoMovimentacao(tip_movimentacao_options[0].value);
@@ -145,9 +143,12 @@ const CadastroMovimentacao = () => {
     setQuantidade('');
     setFormErrors({});
     dispatch(resetAddMovimentacaoStatus());
+    navigate('/');     
   };
 
-  const fundOptions = fundosDisponiveis.length > 0 ? fundosDisponiveis : mockFundos;
+  // Usa fundos da API ou mockados temporariamente
+  // const fundOptions = fundosDisponiveis.length > 0 ? fundosDisponiveis : mockFundos;
+  const fundOptions = fundosDisponiveis;
 
   return (
     <StyledContainer>
@@ -174,7 +175,7 @@ const CadastroMovimentacao = () => {
                 )}
                 {fundOptions.map((fundo) => (
                   <MenuItem key={fundo.id} value={fundo.id}>
-                    {fundo.fundName || fundo.name} {/* API uses fundName, model has nome */}
+                    {fundo.fundName || fundo.name}
                   </MenuItem>
                 ))}
               </TextField>
@@ -185,12 +186,11 @@ const CadastroMovimentacao = () => {
                 label="Data da Operação"
                 type="date"
                 value={dataOperacao}
-                // onChange={(e) => setDataOperacao(e.target.value)} // Backend uses current server date
                 InputLabelProps={{
                   shrink: true,
                 }}
                 fullWidth
-                disabled // Backend currently sets its own date
+                disabled
                 helperText="A data da operação é definida automaticamente pelo servidor."
               />
             </Grid>
@@ -237,7 +237,7 @@ const CadastroMovimentacao = () => {
                 required
                 error={!!formErrors.quantidade}
                 helperText={formErrors.quantidade}
-                InputProps={{ inputProps: { min: 0.001, step: 0.001 } }} // Allow fractional quotas
+                InputProps={{ inputProps: { min: 0.001, step: 0.001 } }}
               />
             </Grid>
           </Grid>
